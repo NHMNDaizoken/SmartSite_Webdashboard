@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-09T08:40:57.631959+00:00",
+  "generated_at": "2026-04-15T08:11:55.234402+00:00",
   "artifact_version": "v0.2.0",
   "project": "SmartSite",
   "freshness": {
@@ -100,7 +100,7 @@
   },
   "warnings": [
     "Classification labels are pseudo-labels derived from notebook rules, not external business ground truth.",
-    "grid_predictions.* are verified reproductions of notebook v5-1 label logic from source data and tensors, not outputs from a saved trained model binary.",
+    "grid_predictions.* are verified reproductions of notebook v6-2 label logic from source data and tensors, not outputs from a saved trained model binary.",
     "Use Macro F1 as primary classification metric and RMSE/MAE/R2 for regression; avoid overclaiming accuracy-only results."
   ]
 }

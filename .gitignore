@@ -22,5 +22,7 @@ Thumbs.db
 .idea/
 .vscode/
 
+.vite/
+
 # Local markers
 fe/DUAL_MODE_DONE.txt
