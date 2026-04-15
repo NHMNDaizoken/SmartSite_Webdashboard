@@ -1,0 +1,136 @@
+{
+  "type": "smartsite_city_bounds",
+  "source": "D:\\Ki2_nam3\\KhaiPhaDuLieuWeb\\SmartSite\\Step 3_ Spatial_Grid\\Spatial_Grid_Tabular.csv",
+  "cities": [
+    {
+      "city": "DaNang",
+      "gridCount": 4747,
+      "center": {
+        "lat": 16.040395,
+        "lng": 108.197191
+      },
+      "bbox": {
+        "minLat": 15.873053046,
+        "minLng": 108.045600745,
+        "maxLat": 16.174168289,
+        "maxLng": 108.356642412
+      },
+      "bboxPolygon": [
+        [
+          108.045600745,
+          15.873053046
+        ],
+        [
+          108.356642412,
+          15.873053046
+        ],
+        [
+          108.356642412,
+          16.174168289
+        ],
+        [
+          108.045600745,
+          16.174168289
+        ],
+        [
+          108.045600745,
+          15.873053046
+        ]
+      ],
+      "inference": {
+        "method": "grid-cell extents derived from row_idx/col_idx center spacing midpoints",
+        "latStepApprox": 0.002158855,
+        "lngStepApprox": 0.002245788
+      },
+      "hotspotGridCount": 1200
+    },
+    {
+      "city": "HCM",
+      "gridCount": 27886,
+      "center": {
+        "lat": 10.773814,
+        "lng": 106.618649
+      },
+      "bbox": {
+        "minLat": 10.331149693,
+        "minLng": 106.303115563,
+        "maxLat": 11.176173052,
+        "maxLng": 106.89038918
+      },
+      "bboxPolygon": [
+        [
+          106.303115563,
+          10.331149693
+        ],
+        [
+          106.89038918,
+          10.331149693
+        ],
+        [
+          106.89038918,
+          11.176173052
+        ],
+        [
+          106.303115563,
+          11.176173052
+        ],
+        [
+          106.303115563,
+          10.331149693
+        ]
+      ],
+      "inference": {
+        "method": "grid-cell extents derived from row_idx/col_idx center spacing midpoints",
+        "latStepApprox": 0.002206322,
+        "lngStepApprox": 0.002245788
+      },
+      "hotspotGridCount": 1200
+    },
+    {
+      "city": "HaNoi",
+      "gridCount": 41341,
+      "center": {
+        "lat": 20.993823,
+        "lng": 105.67194
+      },
+      "bbox": {
+        "minLat": 20.52447752,
+        "minLng": 105.253100613,
+        "maxLat": 21.430343849,
+        "maxLng": 106.071690416
+      },
+      "bboxPolygon": [
+        [
+          105.253100613,
+          20.52447752
+        ],
+        [
+          106.071690416,
+          20.52447752
+        ],
+        [
+          106.071690416,
+          21.430343849
+        ],
+        [
+          105.253100613,
+          21.430343849
+        ],
+        [
+          105.253100613,
+          20.52447752
+        ]
+      ],
+      "inference": {
+        "method": "grid-cell extents derived from row_idx/col_idx center spacing midpoints",
+        "latStepApprox": 0.002096887,
+        "lngStepApprox": 0.002245788
+      },
+      "hotspotGridCount": 1200
+    }
+  ],
+  "limitations": [
+    "City bounds are derived from occupied grid extents, not official administrative polygons.",
+    "Grid polygons are reconstructed from tabular centers and row/column spacing, so edge cells are inferred by midpoint extrapolation."
+  ]
+}

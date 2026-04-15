@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vietnam Admin Boundary Clip - Leaflet BoundaryCanvas</title>
+
+    <!-- Leaflet CDN -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <style>
+      :root {
+        --bg: #f1f5f9;
+        --panel: #ffffff;
+        --line: #d9e2ec;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #dc2626;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .layout {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+      }
+
+      .title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .status {
+        font-size: 13px;
+        color: #334155;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        max-width: 560px;
+      }
+
+      button {
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 9px 14px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 14px;
+        color: #0f172a;
+      }
+
+      button:hover {
+        background: #f8fafc;
+      }
+
+      .btn-primary {
+        border-color: #0284c7;
+        background: #f0f9ff;
+        color: #075985;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .leaflet-popup-content {
+        margin: 10px 12px;
+        min-width: 180px;
+      }
+
+      .popup-title {
+        margin: 0 0 4px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .popup-meta {
+        margin: 0;
+        color: #475569;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="toolbar">
+        <div>
+          <h1 class="title">Vietnam Admin Boundary (Clip by Polygon)</h1>
+          <p class="subtitle">Click tỉnh/thành để chỉ hiển thị vùng đó và cắt tile nền chỉ còn phần bên trong polygon.</p>
+        </div>
+
+        <div class="actions">
+          <button id="resetBtn" class="btn-primary" type="button">Reset</button>
+          <div id="status" class="status">Đang tải dữ liệu ranh giới...</div>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </div>
+
+    <!-- Leaflet CDN -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <!-- BoundaryCanvas plugin -->
+    <script src="https://unpkg.com/leaflet-boundary-canvas@1.0.0/src/BoundaryCanvas.js"></script>
+
+    <script>
+      // Ưu tiên file boundary chuẩn HDX/geoBoundaries.
+      // Nếu chưa có file này trong public/data thì fallback sang vn.json.
+      const GEOJSON_CANDIDATES = [
+        './data/vnm_admin_boundaries.geojson',
+        './data/geoboundaries_adm1.geojson',
+        './data/vn.json',
+      ]
+
+      const OSM_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      const OSM_ATTR = '&copy; OpenStreetMap contributors'
+
+      const BASE_STYLE = {
+        color: '#60a5fa',
+        weight: 1,
+        fillColor: '#93c5fd',
+        fillOpacity: 0.16,
+      }
+
+      const HOVER_STYLE = {
+        color: '#3b82f6',
+        weight: 1.4,
+        fillOpacity: 0.24,
+      }
+
+      const ACTIVE_STYLE = {
+        color: '#dc2626',
+        weight: 3,
+        fillColor: '#ef4444',
+        fillOpacity: 0.3,
+      }
+
+      const map = L.map('map', {
+        zoomControl: true,
+        minZoom: 5,
+      }).setView([16.2, 106.1], 6)
+
+      const statusEl = document.getElementById('status')
+      const resetBtn = document.getElementById('resetBtn')
+
+      let currentTileLayer = null
+      let allUnitsLayer = null
+      let selectedUnitLayer = null
+      let fullGeoJson = null
+      let vietnamBounds = null
+
+      function setStatus(text) {
+        statusEl.textContent = text
+      }
+
+      function getUnitName(feature) {
+        const p = feature?.properties || {}
+        return p.ADM1_VI || p.name || p.NAME_1 || p.shapeName || 'Không rõ tên'
+      }
+
+      function getUnitId(feature) {
+        const p = feature?.properties || {}
+        return p.id || p.ADM1_PCODE || p.shapeISO || 'N/A'
+      }
+
+      function removeLayerIfExists(layerRef) {
+        if (layerRef && map.hasLayer(layerRef)) {
+          map.removeLayer(layerRef)
+        }
+      }
+
+      // Tạo tile layer có clipping theo boundary (BoundaryCanvas).
+      function buildBoundaryTileLayer(boundaryGeoJson) {
+        if (L.TileLayer && L.TileLayer.boundaryCanvas) {
+          return L.TileLayer.boundaryCanvas(OSM_URL, {
+            boundary: boundaryGeoJson,
+            attribution: OSM_ATTR,
+            maxZoom: 19,
+            minZoom: 3,
+            crossOrigin: true,
+          })
+        }
+
+        // Fallback nếu plugin load lỗi: vẫn hiển thị OSM thường.
+        return L.tileLayer(OSM_URL, {
+          attribution: OSM_ATTR,
+          maxZoom: 19,
+          minZoom: 3,
+        })
+      }
+
+      function setBaseTiles(boundaryGeoJson) {
+        removeLayerIfExists(currentTileLayer)
+        currentTileLayer = buildBoundaryTileLayer(boundaryGeoJson)
+        currentTileLayer.addTo(map)
+      }
+
+      async function loadFirstAvailableGeoJson() {
+        const errors = []
+
+        for (const url of GEOJSON_CANDIDATES) {
+          try {
+            const res = await fetch(url)
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}`)
+            }
+            const json = await res.json()
+            if (json?.type !== 'FeatureCollection' || !Array.isArray(json.features)) {
+              throw new Error('Không phải FeatureCollection hợp lệ')
+            }
+            return { data: json, source: url }
+          } catch (err) {
+            errors.push(`${url}: ${err.message}`)
+          }
+        }
+
+        throw new Error(`Không tải được GeoJSON. Chi tiết: ${errors.join(' | ')}`)
+      }
+
+      function openUnitPopup(layer, feature) {
+        const name = getUnitName(feature)
+        const id = getUnitId(feature)
+        layer.bindPopup(
+          `<p class="popup-title">${name}</p><p class="popup-meta">Mã: ${id}</p>`
+        )
+        layer.openPopup()
+      }
+
+      function focusUnit(feature) {
+        // 1) Ẩn layer tổng để chỉ còn 1 đơn vị đang focus
+        removeLayerIfExists(allUnitsLayer)
+        removeLayerIfExists(selectedUnitLayer)
+
+        // 2) Cắt tile theo polygon đúng của đơn vị được chọn
+        setBaseTiles(feature)
+
+        // 3) Vẽ layer đơn vị nổi bật
+        selectedUnitLayer = L.geoJSON(feature, {
+          style: ACTIVE_STYLE,
+          smoothFactor: 1.8,
+          interactive: true,
+        }).addTo(map)
+
+        const bounds = selectedUnitLayer.getBounds()
+        if (bounds.isValid()) {
+          // 4) Zoom khít vùng và khóa kéo ra ngoài biên
+          map.fitBounds(bounds.pad(0.06), { animate: true })
+          map.setMaxBounds(bounds.pad(0.15))
+          map.options.maxBoundsViscosity = 1
+        }
+
+        selectedUnitLayer.eachLayer((layer) => openUnitPopup(layer, feature))
+        setStatus(`Đang focus: ${getUnitName(feature)} (${getUnitId(feature)})`)
+      }
+
+      function resetView() {
+        removeLayerIfExists(selectedUnitLayer)
+
+        if (allUnitsLayer && !map.hasLayer(allUnitsLayer)) {
+          allUnitsLayer.addTo(map)
+        }
+
+        // Cắt tile theo toàn bộ Việt Nam khi reset.
+        setBaseTiles(fullGeoJson)
+
+        if (vietnamBounds && vietnamBounds.isValid()) {
+          map.fitBounds(vietnamBounds.pad(0.02), { animate: false })
+          map.setMaxBounds(vietnamBounds.pad(0.25))
+          map.options.maxBoundsViscosity = 0.85
+        }
+
+        setStatus('Đang hiển thị toàn bộ Việt Nam. Click vào đơn vị để focus.')
+      }
+
+      function wireEvents(feature, layer) {
+        layer.on('click', () => focusUnit(feature))
+
+        layer.on('mouseover', () => {
+          if (map.hasLayer(allUnitsLayer)) {
+            layer.setStyle(HOVER_STYLE)
+          }
+        })
+
+        layer.on('mouseout', () => {
+          if (map.hasLayer(allUnitsLayer)) {
+            layer.setStyle(BASE_STYLE)
+          }
+        })
+      }
+
+      async function init() {
+        try {
+          const { data, source } = await loadFirstAvailableGeoJson()
+          fullGeoJson = data
+
+          setBaseTiles(fullGeoJson)
+
+          allUnitsLayer = L.geoJSON(fullGeoJson, {
+            style: BASE_STYLE,
+            smoothFactor: 1.8,
+            onEachFeature: wireEvents,
+          }).addTo(map)
+
+          vietnamBounds = allUnitsLayer.getBounds()
+          if (vietnamBounds.isValid()) {
+            map.fitBounds(vietnamBounds.pad(0.02), { animate: false })
+            map.setMaxBounds(vietnamBounds.pad(0.25))
+            map.options.maxBoundsViscosity = 0.75
+          }
+
+          setStatus(`Đã tải ${fullGeoJson.features.length} đơn vị từ ${source}. Click để focus.`)
+        } catch (err) {
+          console.error(err)
+          setStatus(`Lỗi tải dữ liệu: ${err.message}`)
+        }
+      }
+
+      resetBtn.addEventListener('click', resetView)
+      init()
+    </script>
+  </body>
+</html>

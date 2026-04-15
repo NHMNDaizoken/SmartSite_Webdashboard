@@ -1,0 +1,26 @@
+# Frontend dependencies and build output
+fe/node_modules/
+fe/dist/
+fe/.vite/
+
+# Python cache
+be/backend/**/__pycache__/
+be/backend/**/*.py[cod]
+
+# Environment files
+fe/.env
+fe/.env.*
+!fe/.env.example
+be/.env
+be/.env.*
+!be/.env.example
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local markers
+fe/DUAL_MODE_DONE.txt

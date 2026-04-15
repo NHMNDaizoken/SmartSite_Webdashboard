@@ -1,0 +1,67 @@
+{
+  "generatedFrom": "D:\\Ki2_nam3\\KhaiPhaDuLieuWeb\\SmartSite\\Step 3_ Spatial_Grid\\Spatial_Grid_Tabular.csv",
+  "predictionSource": "D:\\Ki2_nam3\\KhaiPhaDuLieuWeb\\SmartSite\\ai_workspace\\web_dashboard\\data\\grid_predictions.csv",
+  "predictionMatchCount": 73974,
+  "predictionCoveragePct": 100.0,
+  "generatedAt": "2026-04-09T08:41:19.752885+00:00",
+  "hotspotLimitPerCity": 1200,
+  "cities": [
+    {
+      "city": "DaNang",
+      "gridCount": 4747,
+      "hotspotCount": 1200,
+      "bbox": {
+        "minLat": 15.873053046,
+        "minLng": 108.045600745,
+        "maxLat": 16.174168289,
+        "maxLng": 108.356642412
+      },
+      "center": {
+        "lat": 16.040395,
+        "lng": 108.197191
+      },
+      "files": {
+        "full": "/spatial/full/DaNang.geojson",
+        "hotspots": "/spatial/hotspots/DaNang.geojson"
+      }
+    },
+    {
+      "city": "HCM",
+      "gridCount": 27886,
+      "hotspotCount": 1200,
+      "bbox": {
+        "minLat": 10.331149693,
+        "minLng": 106.303115563,
+        "maxLat": 11.176173052,
+        "maxLng": 106.89038918
+      },
+      "center": {
+        "lat": 10.773814,
+        "lng": 106.618649
+      },
+      "files": {
+        "full": "/spatial/full/HCM.geojson",
+        "hotspots": "/spatial/hotspots/HCM.geojson"
+      }
+    },
+    {
+      "city": "HaNoi",
+      "gridCount": 41341,
+      "hotspotCount": 1200,
+      "bbox": {
+        "minLat": 20.52447752,
+        "minLng": 105.253100613,
+        "maxLat": 21.430343849,
+        "maxLng": 106.071690416
+      },
+      "center": {
+        "lat": 20.993823,
+        "lng": 105.67194
+      },
+      "files": {
+        "full": "/spatial/full/HaNoi.geojson",
+        "hotspots": "/spatial/hotspots/HaNoi.geojson"
+      }
+    }
+  ]
+}

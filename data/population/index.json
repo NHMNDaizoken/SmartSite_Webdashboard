@@ -1,0 +1,28 @@
+{
+  "source": "GADM 4.1 Level-3 (gadm41_VNM_3.json) + 2019 Census seed / estimation",
+  "year": 2019,
+  "generated_at": "2026-04-13T04:12:47.281084Z",
+  "cities": {
+    "hcm": {
+      "filename": "hcm_population.geojson",
+      "city_name": "TP. Hồ Chí Minh",
+      "record_count": 322,
+      "year": 2019,
+      "source": "GADM 4.1 Level-3 + 2019 Census seed / estimation"
+    },
+    "hn": {
+      "filename": "hn_population.geojson",
+      "city_name": "Hà Nội",
+      "record_count": 584,
+      "year": 2019,
+      "source": "GADM 4.1 Level-3 + 2019 Census seed / estimation"
+    },
+    "danang": {
+      "filename": "danang_population.geojson",
+      "city_name": "Đà Nẵng",
+      "record_count": 56,
+      "year": 2019,
+      "source": "GADM 4.1 Level-3 + 2019 Census seed / estimation"
+    }
+  }
+}

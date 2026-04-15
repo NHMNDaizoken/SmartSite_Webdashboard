@@ -1,0 +1,73 @@
+{
+  "name": "SmartSite Web Dashboard Data Bundle",
+  "version": "web-v0.1.0",
+  "intent": "Normalized data contract for frontend dashboards built on top of SmartSite artifacts.",
+  "sourceOfTruth": {
+    "canonicalArtifacts": [
+      "ai_workspace/web_dashboard/data/model_runs.csv",
+      "ai_workspace/web_dashboard/data/grid_summary.csv",
+      "ai_workspace/web_dashboard/data/kpi_summary.json",
+      "ai_workspace/web_dashboard/data/grid_predictions.csv"
+    ],
+    "generatedBundle": "ai_workspace/web_dashboard/data/dashboard_data_bundle.json"
+  },
+  "sections": {
+    "meta": {
+      "description": "Bundle generation metadata and artifact paths.",
+      "required": [
+        "generatedAt",
+        "project",
+        "bundleVersion",
+        "sourceArtifacts"
+      ]
+    },
+    "overview": {
+      "description": "Top-level project KPIs copied from kpi_summary.json without re-interpreting semantic meaning.",
+      "required": [
+        "generatedAt",
+        "artifactVersion",
+        "project",
+        "counts"
+      ]
+    },
+    "citySummaries": {
+      "description": "One entry per city aggregated from grid_summary.csv.",
+      "keyFields": [
+        "city",
+        "coverage",
+        "marketSignals"
+      ]
+    },
+    "predictions": {
+      "description": "Prediction layer derived from ai_workspace/web_dashboard/data/grid_predictions.csv, grouped by city with top-ranked grids for dashboard use.",
+      "keyFields": [
+        "modelVersion",
+        "predictionType",
+        "verificationLevel",
+        "citySummaries",
+        "topGlobal"
+      ]
+    },
+    "modelRuns": {
+      "description": "One entry per model run from model_runs.csv with metrics grouped under metrics and feature tags parsed to an array.",
+      "keyFields": [
+        "runId",
+        "modelVersion",
+        "featureTags",
+        "metrics"
+      ],
+      "metricNullPolicy": "Empty CSV cells are normalized to null."
+    },
+    "leaderboards": {
+      "description": "Frontend-ready sorted views derived from normalized sections. bestAvailableRun prefers the first run with any metric available after sorting by rmse asc, mae asc."
+    },
+    "warnings": {
+      "description": "Warnings forwarded from kpi_summary.json. Frontend should surface these near KPI/model sections."
+    }
+  },
+  "fieldNotes": {
+    "overview.counts.best_model": "Directly inherited from kpi_summary.json; do not assume it is identical to leaderboards.bestAvailableRun.",
+    "modelRuns.metrics.metricStatus": "ready when at least one of mae/rmse/r2 exists; missing otherwise.",
+    "citySummaries.marketSignals": "Means are dataset-level aggregates, not per-point raw values."
+  }
+}

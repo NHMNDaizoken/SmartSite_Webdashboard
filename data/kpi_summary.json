@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-04-09T08:40:57.631959+00:00",
+  "artifact_version": "v0.2.0",
+  "project": "SmartSite",
+  "freshness": {
+    "spatial_grid": {
+      "path": "Step 3_ Spatial_Grid/Spatial_Grid_Tabular.csv",
+      "sha256": "c6809363d951319a2446da0a66951c26a19c4d5c90a184a4f5acddf0cb7b1779",
+      "last_modified": "2026-03-23T02:44:02+00:00",
+      "size_bytes": 8167166
+    },
+    "spatial_tensors": {
+      "path": "Step 3_ Spatial_Grid/Spatial_Tensors.npz",
+      "sha256": "853dfe0b128825680d25dbaef3309e2681a9b3ada1e6ea02fbe9883843b495c1",
+      "last_modified": "2026-03-23T01:23:52+00:00",
+      "size_bytes": 38879678
+    },
+    "processed_points": {
+      "path": "Step 2_ Data Processing/Coffee_Tea_Data_GGMap.csv",
+      "sha256": "a5fb899310ac44a4b03d9f809d5d71d97b6449a718f088385feabd56602de4e0",
+      "last_modified": "2026-03-11T12:07:44+00:00",
+      "size_bytes": 876799
+    }
+  },
+  "kpis": {
+    "processed_point_count": 8647,
+    "grid_count": 73974,
+    "city_count": 3,
+    "model_row_count": 24,
+    "best_classification_model": {
+      "run_id": "multimoal_wdlearning_v5_2",
+      "model_name": "Gradient Boosting (GBDT)",
+      "notebook_name": "Multimoal_WDLearning v5-2",
+      "source_notebook": "Step 5_ Wide&Deep Model/Multimoal_WDLearning v5-2.ipynb",
+      "source_last_modified": "2026-03-24T13:51:50+00:00",
+      "source_sha256": "f66b90ab7acb10b469fc55e96ee5d11245d454b517f3b427726b76379fb56f43",
+      "task_type": "classification",
+      "target_name": "Label",
+      "target_definition": "pseudo_potential_classes_from_v_raw_and_ntl_neighbor",
+      "dataset_name": "Spatial_Grid_Tabular.csv",
+      "dataset_path": "Step 3_ Spatial_Grid/Spatial_Grid_Tabular.csv",
+      "dataset_sha256": "c6809363d951319a2446da0a66951c26a19c4d5c90a184a4f5acddf0cb7b1779",
+      "feature_set": "spatial_tensor;tabular_dense;city_embedding;classical_and_deep_models",
+      "split_strategy": "random_split_within_each_city",
+      "split_notes": "Random split stratified inside each city; easier than city holdout.",
+      "accuracy": 0.967,
+      "f1_macro": 0.8499,
+      "f1_weighted": 0.9684,
+      "mae": NaN,
+      "rmse": NaN,
+      "r2": NaN,
+      "primary_metric_name": "f1_macro",
+      "primary_metric_value": 0.8499,
+      "status": "verified_notebook_output",
+      "verification_level": "A-",
+      "verification_notes": "Metrics read from notebook output and split confirmed in notebook source.",
+      "ground_truth_level": "pseudo_or_engineered",
+      "dashboard_recommended": true
+    },
+    "best_regression_model": {
+      "run_id": "multimoal_wdlearning_v3",
+      "model_name": "Gradient Boosting (GBDT)",
+      "notebook_name": "Multimoal_WDLearning v3",
+      "source_notebook": "Step 5_ Wide&Deep Model/Multimoal_WDLearning v3.ipynb",
+      "source_last_modified": "2026-03-13T17:15:56+00:00",
+      "source_sha256": "2f48ad8827f4be19cef6e9388c90545db928eaf39099a1169f437f8c0a2cac37",
+      "task_type": "regression",
+      "target_name": "Target_Score",
+      "target_definition": "engineered_vitality_score_0_100",
+      "dataset_name": "Spatial_Grid_Tabular.csv",
+      "dataset_path": "Step 3_ Spatial_Grid/Spatial_Grid_Tabular.csv",
+      "dataset_sha256": "c6809363d951319a2446da0a66951c26a19c4d5c90a184a4f5acddf0cb7b1779",
+      "feature_set": "spatial_tensor;tabular_dense;city_embedding;ensemble_and_deep_models",
+      "split_strategy": "random_split_single_dataset",
+      "split_notes": "Regression benchmark family on engineered Target_Score.",
+      "accuracy": NaN,
+      "f1_macro": NaN,
+      "f1_weighted": NaN,
+      "mae": 8.2907,
+      "rmse": 10.8827,
+      "r2": 0.161,
+      "primary_metric_name": "rmse",
+      "primary_metric_value": 10.8827,
+      "status": "verified_notebook_output",
+      "verification_level": "B",
+      "verification_notes": "Per-model metrics read from explicit notebook output lines.",
+      "ground_truth_level": "pseudo_or_engineered",
+      "dashboard_recommended": true
+    },
+    "grid_prediction_label_counts": {
+      "low_potential": 57154,
+      "medium_or_emerging": 13454,
+      "high_observed_vitality": 3366
+    },
+    "label_rule_thresholds": {
+      "median_v_raw_active": 1.025583689550573,
+      "ntl_neighbor_q85_empty": 6.803937506675722,
+      "ntl_neighbor_max": 177.364990234375
+    }
+  },
+  "warnings": [
+    "Classification labels are pseudo-labels derived from notebook rules, not external business ground truth.",
+    "grid_predictions.* are verified reproductions of notebook v5-1 label logic from source data and tensors, not outputs from a saved trained model binary.",
+    "Use Macro F1 as primary classification metric and RMSE/MAE/R2 for regression; avoid overclaiming accuracy-only results."
+  ]
+}
